@@ -1,0 +1,250 @@
+Sub Main()
+    Dim startTime As Double
+    startTime = Timer
+    Dim endTime As Double
+    Dim currentSheet As String
+    currentSheet = "Sheet1"
+
+    Dim wordsToDelete() As String
+    wordsToDelete = Split("HELLO_EXAMPLE,FRIEND_EXAMPLE", ",")
+    
+    Dim columnName() As String
+    columnName = Split("name,node_order3,execution_type4,details,execution_type,importance,estimated_exec_duration,status,step_number,execution_type2,node_order,externalid,version", ",")
+    
+    DeleteColumnByName columnName, currentSheet
+    DeleteSomeKeyWords wordsToDelete, currentSheet
+    ChangeColumnName currentSheet
+    
+    Dim i As Integer
+    Dim totalCount As Integer
+    totalCount = CountLessThanCharacters
+    
+    For i = 1 To totalCount
+        RemoveTextBetweenAngleBrackets currentSheet
+    Next i
+    ' For i = 1 To 100
+        ReplaceSingleDoubleQuotesAndOtherCharacters currentSheet
+    ' Next i
+    endTime = Timer
+    MsgBox "FINISH!" & vbNewLine & "Execution time: " & Format((endTime - startTime), "0.00") & " seconds", vbInformation, "Completion Message"
+End Sub
+Function CountLessThanCharacters() As Integer
+    Dim ws As Worksheet
+    Dim cell As Range
+    Dim totalCount As Integer
+    totalCount = 0
+
+    For Each ws In ThisWorkbook.Worksheets
+        For Each cell In ws.UsedRange
+            Dim cellText As String
+            cellText = cell.Text ' Get the text content of the cell
+            totalCount = totalCount + Len(cellText) - Len(Replace(cellText, "<", ""))
+        Next cell
+    Next ws
+    
+    totalCount = (totalCount / 2) + 1
+    CountLessThanCharacters = totalCount
+End Function
+
+
+Function DeleteColumnByName(columnName() As String, currentSheet As String)
+    Dim ws As Worksheet
+    Dim col As Range
+    Dim i As Integer
+    
+    ' Specify the worksheet where you want to delete the column
+    Set ws = ThisWorkbook.Worksheets(currentSheet) ' Change "Sheet1" to your sheet name
+
+    ' Initialize the array with some values
+    ' myArray = Split("execution_type,importance,estimated_exec_duration,status,step_number,execution_type2,node_order,externalid,version", ",")
+
+    ' Loop through the array and display each element
+    
+    For i = LBound(columnName) To UBound(columnName)
+
+    Set col = ws.Rows(1).Find(What:=columnName(i), LookIn:=xlValues, LookAt:=xlWhole)
+
+    If Not col Is Nothing Then
+        ' Delete the found column
+        col.EntireColumn.Delete
+    ' Else
+        ' MsgBox "Column " & columnName & " not found."
+    End If
+   
+   Next i
+End Function
+Function ChangeColumnName(currentSheet As String)
+    Dim ws As Worksheet
+    Dim targetColumn1 As Range
+    Dim targetColumn2 As Range
+    Dim targetColumn3 As Range
+    Dim targetColumn4 As Range
+    Dim targetColumn5 As Range
+    Dim targetColumn6 As Range
+    
+    Dim columnName1 As String
+    Dim columnName2 As String
+    Dim columnName3 As String
+    Dim columnName4 As String
+    Dim columnName5 As String
+    Dim columnName6 As String
+
+    ' Set the column name you want to change
+    columnName1 = "internalid"
+    columnName2 = "name2"
+    columnName3 = "summary"
+    columnName4 = "preconditions"
+    columnName5 = "actions"
+    columnName6 = "expectedresults"
+
+    ' Specify the worksheet where you want to change the column name
+    Set ws = ThisWorkbook.Worksheets(currentSheet) ' Change "Sheet1" to your sheet name
+
+    ' Find the column by name -> internalid
+    Set targetColumn1 = ws.Rows(1).Find(What:=columnName1, LookIn:=xlValues, LookAt:=xlWhole)
+    ' Change colunm from internalid -> Existing Case ID
+    If Not targetColumn1 Is Nothing Then
+        targetColumn1.Value = "Existing Case ID"
+    End If
+    
+    ' Find the column by name -> name
+    Set targetColumn2 = ws.Rows(1).Find(What:=columnName2, LookIn:=xlValues, LookAt:=xlWhole)
+    ' Change colunm from name -> Title
+    If Not targetColumn2 Is Nothing Then
+        targetColumn2.Value = "Title"
+    End If
+    
+    ' Find the column by name -> name
+    Set targetColumn3 = ws.Rows(1).Find(What:=columnName3, LookIn:=xlValues, LookAt:=xlWhole)
+    ' Change colunm from name -> Title
+    If Not targetColumn3 Is Nothing Then
+        targetColumn3.Value = "Description"
+    End If
+    
+    ' Find the column by name -> name
+    Set targetColumn4 = ws.Rows(1).Find(What:=columnName4, LookIn:=xlValues, LookAt:=xlWhole)
+    ' Change colunm from name -> Title
+    If Not targetColumn4 Is Nothing Then
+        targetColumn4.Value = "Pre-conditions"
+    End If
+    
+    ' Find the column by name -> name
+    Set targetColumn5 = ws.Rows(1).Find(What:=columnName5, LookIn:=xlValues, LookAt:=xlWhole)
+    ' Change colunm from name -> Title
+    If Not targetColumn5 Is Nothing Then
+        targetColumn5.Value = "Step"
+    End If
+    
+    ' Find the column by name -> name
+    Set targetColumn6 = ws.Rows(1).Find(What:=columnName6, LookIn:=xlValues, LookAt:=xlWhole)
+    ' Change colunm from name -> Title
+    If Not targetColumn6 Is Nothing Then
+        targetColumn6.Value = "Expected Result"
+    End If
+    
+End Function
+Function RemoveTextBetweenAngleBrackets(currentSheet As String)
+    Dim wb As Workbook
+    Dim ws As Worksheet
+    Dim cell As Range
+    Dim startLoc As Long
+    Dim endLoc As Long
+    Dim i As Integer
+    
+     ' Specify the worksheet where you want to change the column name
+    Set ws = ThisWorkbook.Worksheets(currentSheet) ' Change "Sheet1" to your sheet name
+
+    For Each wb In Workbooks
+        For Each ws In wb.Worksheets
+            For Each cell In ws.UsedRange
+                startLoc = InStr(1, cell.Value, "<")
+                endLoc = InStr(1, cell.Value, ">")
+                If startLoc > 0 And endLoc > 0 And startLoc < endLoc Then
+                    cell.Value = Left(cell.Value, startLoc - 1) & Mid(cell.Value, endLoc + 1)
+                End If
+                
+            Next cell
+        Next ws
+    Next wb
+End Function
+Function ReplaceSingleDoubleQuotesAndOtherCharacters(currentSheet As String)
+    Dim wb As Workbook
+    Dim ws As Worksheet
+    Dim cell As Range
+    Dim i As Integer
+    
+    ' Specify the worksheet where you want to delete the column
+    Set ws = ThisWorkbook.Worksheets(currentSheet) ' Change "Sheet1" to your sheet name
+    
+    Dim searchWrongEmptyChar As String
+    searchWrongEmptyChar = "&nbsp;"
+    
+    Dim searchWrongDoubleQuotes As String
+    searchWrongDoubleQuotes = "&quot;"
+    
+    Dim searchWrongSingleQuotes As String
+    searchWrongSingleQuotes = "&#39;"
+
+    Dim searchWrongSingleCyrillicQuotes As String
+    searchWrongSingleCyrillicQuotes = "&rsquo;"
+    
+    Dim searchWrongLeftAngleBracket As String
+    searchWrongLeftAngleBracket = "&lt;"
+    
+    
+    Dim searchWrongRightAngleBracket As String
+    searchWrongRightAngleBracket = "&gt;"
+
+    For Each wb In Workbooks
+        For Each ws In wb.Worksheets
+            For Each cell In ws.UsedRange
+                 If InStr(1, cell.Value, searchWrongEmptyChar) > 0 Then
+                cell.Value = Replace(cell.Value, searchWrongEmptyChar, "")
+                End If
+                
+                If InStr(1, cell.Value, searchWrongDoubleQuotes) > 0 Then
+                cell.Value = Replace(cell.Value, searchWrongDoubleQuotes, """")
+                End If
+                
+                If InStr(1, cell.Value, searchWrongSingleQuotes) > 0 Then
+                cell.Value = Replace(cell.Value, searchWrongSingleQuotes, "'")
+                End If
+
+        If InStr(1, cell.Value, searchWrongSingleCyrillicQuotes) > 0 Then
+                cell.Value = Replace(cell.Value, searchWrongSingleCyrillicQuotes, "'")
+                End If
+                
+                If InStr(1, cell.Value, searchWrongLeftAngleBracket) > 0 Then
+                cell.Value = Replace(cell.Value, searchWrongLeftAngleBracket, "<")
+                End If
+                
+                If InStr(1, cell.Value, searchWrongRightAngleBracket) > 0 Then
+                cell.Value = Replace(cell.Value, searchWrongRightAngleBracket, ">")
+                End If
+                
+            Next cell
+        Next ws
+    Next wb
+End Function
+Function DeleteSomeKeyWords(wordsToDelete() As String, currentSheet As String)
+    Dim wb As Workbook
+    Dim ws As Worksheet
+    Dim cell As Range
+ 
+    ' Specify the worksheet where you want to delete the column
+    Set ws = ThisWorkbook.Worksheets(currentSheet) ' Change "Sheet1" to your sheet name
+    
+    Dim i As Integer
+    For i = LBound(wordsToDelete) To UBound(wordsToDelete)
+        For Each wb In Workbooks
+            For Each ws In wb.Worksheets
+                For Each cell In ws.UsedRange
+                     If InStr(1, cell.Value, wordsToDelete(i)) > 0 Then
+                    cell.Value = Replace(cell.Value, wordsToDelete(i), "")
+                    End If
+                Next cell
+            Next ws
+        Next wb
+    Next i
+End Function
+
